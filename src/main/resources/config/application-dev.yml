@@ -32,7 +32,7 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://localhost:5432/paylite
+    url: jdbc:postgresql://localhost:5433/paylite # there was conflict with local postgres server so i am using 5433
     username: paylite
     password:
     hikari:

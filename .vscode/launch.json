@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-PayliteApp<paylite>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.paylite.PayliteApp",
+      "projectName": "paylite",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

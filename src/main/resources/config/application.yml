@@ -92,6 +92,17 @@ management:
 spring:
   application:
     name: paylite
+
+  config:
+    import: 'optional:consul:'
+
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      config:
+        format: YAML
+
   docker:
     compose:
       enabled: true

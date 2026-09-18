@@ -9,3 +9,10 @@ services:
     extends:
       file: ./keycloak.yml
       service: keycloak
+    #TODO Optimize by creating new docker file and import from there [ note for myself ]
+  consul:
+    image: hashicorp/consul:1.21.3
+    container_name: paylite-consul
+    command: consul agent -dev -client=0.0.0.0
+    ports:
+      - '8500:8500'
