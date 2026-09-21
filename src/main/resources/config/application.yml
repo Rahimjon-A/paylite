@@ -94,7 +94,7 @@ spring:
     name: paylite
 
   config:
-    import: 'optional:consul:'
+    import: 'consul:'
 
   cloud:
     consul:

@@ -1,5 +1,6 @@
 package com.paylite.config;
 
+import java.math.BigDecimal;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -12,11 +13,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class ApplicationProperties {
 
     private final Liquibase liquibase = new Liquibase();
+    private final Payment payment = new Payment();
 
     // jhipster-needle-application-properties-property
 
     public Liquibase getLiquibase() {
         return liquibase;
+    }
+
+    public Payment getPayment() {
+        return payment;
     }
 
     // jhipster-needle-application-properties-property-getter
@@ -31,6 +37,19 @@ public class ApplicationProperties {
 
         public void setAsyncStart(Boolean asyncStart) {
             this.asyncStart = asyncStart;
+        }
+    }
+
+    public static class Payment {
+
+        private BigDecimal commissionPercent;
+
+        public BigDecimal getCommissionPercent() {
+            return commissionPercent;
+        }
+
+        public void setCommissionPercent(BigDecimal commissionPercent) {
+            this.commissionPercent = commissionPercent;
         }
     }
     // jhipster-needle-application-properties-property-class
