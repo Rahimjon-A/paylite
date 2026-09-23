@@ -1,12 +1,16 @@
 package com.paylite.web.rest;
 
 import com.paylite.domain.Agent;
+import com.paylite.domain.dto.AgentBalanceResponse;
+import com.paylite.domain.dto.TopUpRequest;
 import com.paylite.service.AgentService;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.ResponseUtil;
 
@@ -25,27 +29,15 @@ public class AgentResource {
         this.agentService = agentService;
     }
 
-    /**
-     * {@code GET  /agents} : get all the agents.
-     *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of agents in body.
-     */
-    @GetMapping("")
-    public List<Agent> getAllAgents() {
-        LOG.debug("REST request to get all Agents");
-        return agentService.findAll();
+    @GetMapping("/me/balance")
+    @PreAuthorize("hasAuthority('ROLE_AGENT')")
+    public ResponseEntity<AgentBalanceResponse> getCurrentAgentBalance() {
+        return ResponseEntity.ok(agentService.getCurrentAgentBalance());
     }
 
-    /**
-     * {@code GET  /agents/:id} : get the "id" agent.
-     *
-     * @param id the id of the agent to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the agent, or with status {@code 404 (Not Found)}.
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<Agent> getAgent(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get Agent : {}", id);
-        Optional<Agent> agent = agentService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(agent);
+    @PostMapping("/{id}/topup")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Agent> topUp(@PathVariable Long id, @Valid @RequestBody TopUpRequest request) {
+        return ResponseEntity.ok(agentService.topUp(id, request.amount()));
     }
 }

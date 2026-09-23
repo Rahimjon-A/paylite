@@ -71,7 +71,7 @@ class CustomClaimConverterIT {
         user.put("preferred_username", USERNAME);
         user.put("given_name", NAME);
         user.put("family_name", FAMILY_NAME);
-        user.putArray("groups").add(AuthoritiesConstants.ADMIN).add(AuthoritiesConstants.USER);
+        user.putArray("groups").add(AuthoritiesConstants.ADMIN).add(AuthoritiesConstants.AGENT);
         mockHttpGetUserInfo(user);
 
         // WHEN
@@ -83,7 +83,7 @@ class CustomClaimConverterIT {
             .containsEntry("preferred_username", USERNAME)
             .containsEntry("given_name", NAME)
             .containsEntry("family_name", FAMILY_NAME)
-            .containsEntry("groups", Arrays.asList(AuthoritiesConstants.ADMIN, AuthoritiesConstants.USER));
+            .containsEntry("groups", Arrays.asList(AuthoritiesConstants.ADMIN, AuthoritiesConstants.AGENT));
     }
 
     @Test
@@ -112,7 +112,7 @@ class CustomClaimConverterIT {
         user.put("preferred_username", USERNAME);
         user.put("given_name", NAME);
         user.put("family_name", FAMILY_NAME);
-        user.putArray(SecurityUtils.CLAIMS_NAMESPACE + "roles").add(AuthoritiesConstants.ADMIN).add(AuthoritiesConstants.USER);
+        user.putArray(SecurityUtils.CLAIMS_NAMESPACE + "roles").add(AuthoritiesConstants.ADMIN).add(AuthoritiesConstants.AGENT);
         mockHttpGetUserInfo(user);
 
         // WHEN
@@ -124,7 +124,7 @@ class CustomClaimConverterIT {
             .containsEntry("preferred_username", USERNAME)
             .containsEntry("given_name", NAME)
             .containsEntry("family_name", FAMILY_NAME)
-            .containsEntry("roles", Arrays.asList(AuthoritiesConstants.ADMIN, AuthoritiesConstants.USER));
+            .containsEntry("roles", Arrays.asList(AuthoritiesConstants.ADMIN, AuthoritiesConstants.AGENT));
     }
 
     @Test

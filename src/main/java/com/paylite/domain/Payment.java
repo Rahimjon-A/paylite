@@ -45,7 +45,8 @@ public class Payment implements Serializable {
     private Instant createdDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Agent manyToOne;
+    @JoinColumn(name = "agent_id")
+    private Agent agent;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -140,16 +141,16 @@ public class Payment implements Serializable {
         this.createdDate = createdDate;
     }
 
-    public Agent getManyToOne() {
-        return this.manyToOne;
+    public Agent getAgent() {
+        return this.agent;
     }
 
-    public void setManyToOne(Agent agent) {
-        this.manyToOne = agent;
+    public void setAgent(Agent agent) {
+        this.agent = agent;
     }
 
-    public Payment manyToOne(Agent agent) {
-        this.setManyToOne(agent);
+    public Payment agent(Agent agent) {
+        this.setAgent(agent);
         return this;
     }
 

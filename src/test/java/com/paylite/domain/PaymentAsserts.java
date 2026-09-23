@@ -64,6 +64,6 @@ public class PaymentAsserts {
     public static void assertPaymentUpdatableRelationshipsEquals(Payment expected, Payment actual) {
         assertThat(actual)
             .as("Verify Payment relationships")
-            .satisfies(a -> assertThat(a.getManyToOne()).as("check manyToOne").isEqualTo(expected.getManyToOne()));
+            .satisfies(a -> assertThat(a.getAgent()).as("check agent").isEqualTo(expected.getAgent()));
     }
 }

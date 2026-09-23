@@ -33,7 +33,7 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: http://DO_NOT_CALL:9080/realms/jhipster
+            issuer-uri: http://DO_NOT_CALL:9080/realms/paylite
       resourceserver:
         jwt:
           principal-claim-name: preferred_username

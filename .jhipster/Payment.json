@@ -41,7 +41,7 @@
     {
       "otherEntityField": "login",
       "otherEntityName": "agent",
-      "relationshipName": "manyToOne",
+      "relationshipName": "agent",
       "relationshipSide": "left",
       "relationshipType": "many-to-one"
     }

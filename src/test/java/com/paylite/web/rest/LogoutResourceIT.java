@@ -50,7 +50,7 @@ class LogoutResourceIT {
     @BeforeEach
     void before() throws Exception {
         claims = new HashMap<>();
-        claims.put("groups", Collections.singletonList(AuthoritiesConstants.USER));
+        claims.put("groups", Collections.singletonList(AuthoritiesConstants.AGENT));
         claims.put("sub", 123);
 
         SecurityContextHolder.getContext()

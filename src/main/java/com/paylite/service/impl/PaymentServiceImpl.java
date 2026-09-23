@@ -1,8 +1,20 @@
 package com.paylite.service.impl;
 
+import com.paylite.config.ApplicationProperties;
+import com.paylite.domain.Agent;
 import com.paylite.domain.Payment;
+import com.paylite.domain.dto.CreatePaymentRequest;
+import com.paylite.domain.dto.PaymentResponse;
+import com.paylite.domain.dto.PaymentResult;
+import com.paylite.domain.enumeration.PaymentStatus;
+import com.paylite.repository.AgentRepository;
 import com.paylite.repository.PaymentRepository;
+import com.paylite.security.SecurityUtils;
 import com.paylite.service.PaymentService;
+import jakarta.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Instant;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,75 +33,92 @@ public class PaymentServiceImpl implements PaymentService {
     private static final Logger LOG = LoggerFactory.getLogger(PaymentServiceImpl.class);
 
     private final PaymentRepository paymentRepository;
+    private final AgentRepository agentRepository;
+    private final ApplicationProperties applicationProperties;
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository) {
+    public PaymentServiceImpl(
+        PaymentRepository paymentRepository,
+        AgentRepository agentRepository,
+        ApplicationProperties applicationProperties
+    ) {
         this.paymentRepository = paymentRepository;
+        this.agentRepository = agentRepository;
+        this.applicationProperties = applicationProperties;
     }
 
     @Override
-    public Payment save(Payment payment) {
-        LOG.debug("Request to save Payment : {}", payment);
-        return paymentRepository.save(payment);
-    }
+    public PaymentResult createPayment(CreatePaymentRequest request) {
+        String login = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new IllegalStateException("Current user is not authenticated"));
 
-    @Override
-    public Payment update(Payment payment) {
-        LOG.debug("Request to update Payment : {}", payment);
-        return paymentRepository.save(payment);
-    }
+        Agent agent = agentRepository
+            .findOneByLoginForUpdate(login)
+            .orElseThrow(() -> new EntityNotFoundException("Agent not found: " + login));
 
-    @Override
-    public Optional<Payment> partialUpdate(Payment payment) {
-        LOG.debug("Request to partially update Payment : {}", payment);
+        Long amount = request.amount();
 
-        return paymentRepository
-            .findById(payment.getId())
-            .map(existingPayment -> {
-                if (payment.getAccountNumber() != null) {
-                    existingPayment.setAccountNumber(payment.getAccountNumber());
-                }
-                if (payment.getAmount() != null) {
-                    existingPayment.setAmount(payment.getAmount());
-                }
-                if (payment.getCommissionAmount() != null) {
-                    existingPayment.setCommissionAmount(payment.getCommissionAmount());
-                }
-                if (payment.getTotalAmount() != null) {
-                    existingPayment.setTotalAmount(payment.getTotalAmount());
-                }
-                if (payment.getStatus() != null) {
-                    existingPayment.setStatus(payment.getStatus());
-                }
-                if (payment.getCreatedDate() != null) {
-                    existingPayment.setCreatedDate(payment.getCreatedDate());
-                }
+        long commissionAmount = getCommissionAmount(amount);
+        long totalAmount = amount + commissionAmount;
 
-                return existingPayment;
-            })
-            .map(paymentRepository::save);
+        Payment payment = new Payment()
+            .accountNumber(request.account())
+            .amount(amount)
+            .commissionAmount(commissionAmount)
+            .totalAmount(totalAmount)
+            .createdDate(Instant.now())
+            .agent(agent);
+
+        if (agent.getBalance() < totalAmount) {
+            payment.setStatus(PaymentStatus.FAILED);
+
+            paymentRepository.save(payment);
+
+            return new PaymentResult(toResponse(payment), true);
+        }
+
+        agent.setBalance(agent.getBalance() - totalAmount);
+        payment.setStatus(PaymentStatus.PAID);
+
+        paymentRepository.save(payment);
+        agentRepository.save(agent);
+
+        return new PaymentResult(toResponse(payment), false);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Payment> findAll(Pageable pageable) {
-        LOG.debug("Request to get all Payments");
-        return paymentRepository.findAll(pageable);
+    public Page<PaymentResponse> getCurrentAgentPayments(Pageable pageable) {
+        String login = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new IllegalStateException("Current user is not authenticated"));
+
+        return paymentRepository.findAllByAgentLogin(login, pageable).map(this::toResponse);
     }
 
-    public Page<Payment> findAllWithEagerRelationships(Pageable pageable) {
-        return paymentRepository.findAllWithEagerRelationships(pageable);
+    private long getCommissionAmount(Long amount) {
+        BigDecimal commissionPercent = applicationProperties.getPayment().getCommissionPercent();
+
+        if (commissionPercent == null) {
+            throw new IllegalStateException(
+                "Commission percentage is not configured. " + "Expected property: application.payment.commission-percent"
+            );
+        }
+
+        BigDecimal commission = BigDecimal.valueOf(amount)
+            .multiply(commissionPercent)
+            .divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP);
+
+        return commission.longValueExact();
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<Payment> findOne(Long id) {
-        LOG.debug("Request to get Payment : {}", id);
-        return paymentRepository.findOneWithEagerRelationships(id);
-    }
-
-    @Override
-    public void delete(Long id) {
-        LOG.debug("Request to delete Payment : {}", id);
-        paymentRepository.deleteById(id);
+    private PaymentResponse toResponse(Payment payment) {
+        return new PaymentResponse(
+            payment.getId(),
+            payment.getAccountNumber(),
+            payment.getAmount(),
+            payment.getCommissionAmount(),
+            payment.getTotalAmount(),
+            payment.getStatus(),
+            payment.getCreatedDate()
+        );
     }
 }

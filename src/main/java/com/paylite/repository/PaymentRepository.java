@@ -14,27 +14,13 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
-    default Optional<Payment> findOneWithEagerRelationships(Long id) {
-        return this.findOneWithToOneRelationships(id);
-    }
-
-    default List<Payment> findAllWithEagerRelationships() {
-        return this.findAllWithToOneRelationships();
-    }
-
-    default Page<Payment> findAllWithEagerRelationships(Pageable pageable) {
-        return this.findAllWithToOneRelationships(pageable);
-    }
-
     @Query(
-        value = "select payment from Payment payment left join fetch payment.manyToOne",
-        countQuery = "select count(payment) from Payment payment"
+        """
+        select payment
+        from Payment payment
+        where payment.agent.login = :login
+        order by payment.createdDate desc
+        """
     )
-    Page<Payment> findAllWithToOneRelationships(Pageable pageable);
-
-    @Query("select payment from Payment payment left join fetch payment.manyToOne")
-    List<Payment> findAllWithToOneRelationships();
-
-    @Query("select payment from Payment payment left join fetch payment.manyToOne where payment.id =:id")
-    Optional<Payment> findOneWithToOneRelationships(@Param("id") Long id);
+    Page<Payment> findAllByAgentLogin(@Param("login") String login, Pageable pageable);
 }

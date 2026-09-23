@@ -24,14 +24,14 @@ class PaymentTest {
     }
 
     @Test
-    void manyToOneTest() {
+    void agentTest() {
         Payment payment = getPaymentRandomSampleGenerator();
         Agent agentBack = getAgentRandomSampleGenerator();
 
-        payment.setManyToOne(agentBack);
-        assertThat(payment.getManyToOne()).isEqualTo(agentBack);
+        payment.setAgent(agentBack);
+        assertThat(payment.getAgent()).isEqualTo(agentBack);
 
-        payment.manyToOne(null);
-        assertThat(payment.getManyToOne()).isNull();
+        payment.agent(null);
+        assertThat(payment.getAgent()).isNull();
     }
 }

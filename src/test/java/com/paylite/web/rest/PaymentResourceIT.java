@@ -243,23 +243,6 @@ class PaymentResourceIT {
             .andExpect(jsonPath("$.[*].createdDate").value(hasItem(DEFAULT_CREATED_DATE.toString())));
     }
 
-    @SuppressWarnings({ "unchecked" })
-    void getAllPaymentsWithEagerRelationshipsIsEnabled() throws Exception {
-        when(paymentServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
-
-        restPaymentMockMvc.perform(get(ENTITY_API_URL + "?eagerload=true")).andExpect(status().isOk());
-
-        verify(paymentServiceMock, times(1)).findAllWithEagerRelationships(any());
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    void getAllPaymentsWithEagerRelationshipsIsNotEnabled() throws Exception {
-        when(paymentServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
-
-        restPaymentMockMvc.perform(get(ENTITY_API_URL + "?eagerload=false")).andExpect(status().isOk());
-        verify(paymentRepositoryMock, times(1)).findAll(any(Pageable.class));
-    }
-
     @Test
     @Transactional
     void getPayment() throws Exception {

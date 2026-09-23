@@ -1,10 +1,11 @@
 package com.paylite.service.impl;
 
 import com.paylite.domain.Agent;
+import com.paylite.domain.dto.AgentBalanceResponse;
 import com.paylite.repository.AgentRepository;
+import com.paylite.security.SecurityUtils;
 import com.paylite.service.AgentService;
-import java.util.List;
-import java.util.Optional;
+import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -26,53 +27,24 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
-    public Agent save(Agent agent) {
-        LOG.debug("Request to save Agent : {}", agent);
-        return agentRepository.save(agent);
-    }
-
-    @Override
-    public Agent update(Agent agent) {
-        LOG.debug("Request to update Agent : {}", agent);
-        return agentRepository.save(agent);
-    }
-
-    @Override
-    public Optional<Agent> partialUpdate(Agent agent) {
-        LOG.debug("Request to partially update Agent : {}", agent);
-
-        return agentRepository
-            .findById(agent.getId())
-            .map(existingAgent -> {
-                if (agent.getLogin() != null) {
-                    existingAgent.setLogin(agent.getLogin());
-                }
-                if (agent.getBalance() != null) {
-                    existingAgent.setBalance(agent.getBalance());
-                }
-
-                return existingAgent;
-            })
-            .map(agentRepository::save);
-    }
-
-    @Override
     @Transactional(readOnly = true)
-    public List<Agent> findAll() {
-        LOG.debug("Request to get all Agents");
-        return agentRepository.findAll();
+    public AgentBalanceResponse getCurrentAgentBalance() {
+        String login = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new IllegalStateException("Current user is not authenticated"));
+
+        Agent agent = agentRepository.findOneByLogin(login).orElseThrow(() -> new EntityNotFoundException("Agent not found: " + login));
+
+        return new AgentBalanceResponse(agent.getBalance());
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Optional<Agent> findOne(Long id) {
-        LOG.debug("Request to get Agent : {}", id);
-        return agentRepository.findById(id);
-    }
+    public Agent topUp(Long id, Long amount) {
+        LOG.debug("Request to top up Agent : {}, amount : {}", id, amount);
 
-    @Override
-    public void delete(Long id) {
-        LOG.debug("Request to delete Agent : {}", id);
-        agentRepository.deleteById(id);
+        Agent agent = agentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Agent not found: " + id));
+
+        agent.setBalance(agent.getBalance() + amount);
+
+        return agentRepository.save(agent);
     }
 }

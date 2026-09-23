@@ -1,8 +1,8 @@
 {
-  "id": "jhipster",
-  "realm": "jhipster",
-  "displayName": "JHipster",
-  "displayNameHtml": "<div class=\"kc-logo-text\"><span>JHipster</span></div>",
+  "id": "paylite",
+  "realm": "paylite",
+  "displayName": "Paylite",
+  "displayNameHtml": "<div class=\"kc-logo-text\"><span>Paylite</span></div>",
   "notBefore": 0,
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
@@ -50,10 +50,10 @@
       {
         "id": "8e986fb5-dafb-43bf-a7c2-7e57572d3d80",
         "name": "ROLE_ADMIN",
-        "description": "Jhipster administrator role",
+        "description": "Paylite administrator role",
         "composite": false,
         "clientRole": false,
-        "containerId": "jhipster",
+        "containerId": "paylite",
         "attributes": {}
       },
       {
@@ -62,21 +62,21 @@
         "description": "${role_offline-access}",
         "composite": false,
         "clientRole": false,
-        "containerId": "jhipster",
+        "containerId": "paylite",
         "attributes": {}
       },
       {
         "id": "ec5705e1-fc1d-4d21-8364-abd3bd4efcd0",
-        "name": "ROLE_USER",
-        "description": "Jhipster user role",
+        "name": "ROLE_AGENT",
+        "description": "Paylite agent role",
         "composite": false,
         "clientRole": false,
-        "containerId": "jhipster",
+        "containerId": "paylite",
         "attributes": {}
       },
       {
         "id": "d2b73e7b-a2d7-40e9-8ebc-2af00454e8aa",
-        "name": "default-roles-jhipster",
+        "name": "default-roles-paylite",
         "description": "${role_default-roles}",
         "composite": true,
         "composites": {
@@ -86,7 +86,7 @@
           }
         },
         "clientRole": false,
-        "containerId": "jhipster",
+        "containerId": "paylite",
         "attributes": {}
       },
       {
@@ -95,7 +95,7 @@
         "description": "${role_uma_authorization}",
         "composite": false,
         "clientRole": false,
-        "containerId": "jhipster",
+        "containerId": "paylite",
         "attributes": {}
       }
     ],
@@ -421,24 +421,24 @@
     },
     {
       "id": "672767bb-4ab0-4d37-93a1-9b6c2416b6b2",
-      "name": "Users",
-      "path": "/Users",
+      "name": "Agents",
+      "path": "/Agents",
       "attributes": {},
-      "realmRoles": ["ROLE_USER"],
+      "realmRoles": ["ROLE_AGENT"],
       "clientRoles": {},
       "subGroups": []
     }
   ],
   "defaultRole": {
     "id": "d2b73e7b-a2d7-40e9-8ebc-2af00454e8aa",
-    "name": "default-roles-jhipster",
+    "name": "default-roles-paylite",
     "description": "${role_default-roles}",
     "composite": true,
     "clientRole": false,
-    "containerId": "jhipster"
+    "containerId": "paylite"
   },
   "requiredCredentials": ["password"],
-  "defaultGroups": ["/Users"],
+  "defaultGroups": [],
   "otpPolicyType": "totp",
   "otpPolicyAlgorithm": "HmacSHA1",
   "otpPolicyInitialCounter": 0,
@@ -481,7 +481,7 @@
       "serviceAccountClientId": "internal",
       "disableableCredentialTypes": [],
       "requiredActions": [],
-      "realmRoles": ["default-roles-jhipster"],
+      "realmRoles": ["default-roles-paylite"],
       "notBefore": 0,
       "groups": []
     }
@@ -506,20 +506,20 @@
       "clientId": "account",
       "name": "${client_account}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/jhipster/account/",
+      "baseUrl": "/realms/paylite/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "c3c994e4-2da3-40a8-afc8-9fc56a91c6ea",
-      "redirectUris": ["/realms/jhipster/account/*"],
+      "redirectUris": ["/realms/paylite/account/*"],
       "webOrigins": [],
       "notBefore": 0,
       "bearerOnly": false,
       "consentRequired": false,
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": false,
+      "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false,
       "publicClient": false,
       "frontchannelLogout": false,
@@ -538,20 +538,20 @@
       "clientId": "account-console",
       "name": "${client_account-console}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/jhipster/account/",
+      "baseUrl": "/realms/paylite/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "dbf3919f-f1f0-4150-afc7-b543382d1b2c",
-      "redirectUris": ["/realms/jhipster/account/*"],
+      "redirectUris": ["/realms/paylite/account/*"],
       "webOrigins": [],
       "notBefore": 0,
       "bearerOnly": false,
       "consentRequired": false,
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": false,
+      "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false,
       "publicClient": true,
       "frontchannelLogout": false,
@@ -622,7 +622,7 @@
       "consentRequired": false,
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": false,
+      "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false,
       "publicClient": false,
       "frontchannelLogout": false,
@@ -653,7 +653,7 @@
       "consentRequired": false,
       "standardFlowEnabled": true,
       "implicitFlowEnabled": true,
-      "directAccessGrantsEnabled": false,
+      "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false,
       "publicClient": true,
       "frontchannelLogout": false,
@@ -677,7 +677,7 @@
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": true,
       "nodeReRegistrationTimeout": -1,
-      "defaultClientScopes": ["web-origins", "acr", "jhipster", "roles", "profile", "email"],
+      "defaultClientScopes": ["web-origins", "acr", "paylite", "roles", "profile", "email"],
       "optionalClientScopes": ["address", "phone", "offline_access", "microprofile-jwt"]
     },
     {
@@ -696,7 +696,7 @@
       "consentRequired": false,
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": false,
+      "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false,
       "publicClient": false,
       "frontchannelLogout": false,
@@ -715,20 +715,20 @@
       "clientId": "security-admin-console",
       "name": "${client_security-admin-console}",
       "rootUrl": "${authAdminUrl}",
-      "baseUrl": "/admin/jhipster/console/",
+      "baseUrl": "/admin/paylite/console/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "63d80b68-a7ea-494c-b521-b1a211d2ce13",
-      "redirectUris": ["/admin/jhipster/console/*"],
+      "redirectUris": ["/admin/paylite/console/*"],
       "webOrigins": ["+"],
       "notBefore": 0,
       "bearerOnly": false,
       "consentRequired": false,
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": false,
+      "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false,
       "publicClient": true,
       "frontchannelLogout": false,
@@ -784,7 +784,7 @@
       "consentRequired": false,
       "standardFlowEnabled": true,
       "implicitFlowEnabled": true,
-      "directAccessGrantsEnabled": false,
+      "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false,
       "publicClient": true,
       "frontchannelLogout": false,
@@ -808,7 +808,7 @@
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": true,
       "nodeReRegistrationTimeout": -1,
-      "defaultClientScopes": ["web-origins", "acr", "jhipster", "roles", "profile", "email"],
+      "defaultClientScopes": ["web-origins", "acr", "paylite", "roles", "profile", "email"],
       "optionalClientScopes": ["address", "phone", "offline_access", "microprofile-jwt"]
     }
   ],
@@ -889,8 +889,8 @@
     },
     {
       "id": "9816de82-24b7-42fe-a85a-1264868ec293",
-      "name": "jhipster",
-      "description": "Jhipster specific claims",
+      "name": "paylite",
+      "description": "Paylite specific claims",
       "protocol": "openid-connect",
       "attributes": {
         "include.in.token.scope": "false",
@@ -2249,18 +2249,18 @@
         "account": ["view-profile", "manage-account"]
       },
       "notBefore": 0,
-      "groups": ["/Admins", "/Users"]
+      "groups": ["/Admins"]
     },
     {
       "id": "c4af4e2f-b432-4c3b-8405-cca86cd5b97b",
       "createdTimestamp": 1505479373742,
-      "username": "user",
+      "username": "agent",
       "enabled": true,
       "totp": false,
       "emailVerified": true,
       "firstName": "",
-      "lastName": "User",
-      "email": "user@localhost",
+      "lastName": "Agent",
+      "email": "agent@localhost",
       "credentials": [
         {
           "id": "7821832b-1e82-45a2-b8d3-f1a6ad909e64",
@@ -2277,7 +2277,7 @@
         "account": ["view-profile", "manage-account"]
       },
       "notBefore": 0,
-      "groups": ["/Users"]
+      "groups": ["/Agents"]
     }
   ]
 }
