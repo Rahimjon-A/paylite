@@ -9,6 +9,6 @@ import java.util.Optional;
  * Service Interface for managing {@link com.paylite.domain.Agent}.
  */
 public interface AgentService {
-    AgentBalanceResponse getCurrentAgentBalance();
+    Agent getCurrentAgent();
     Agent topUp(Long id, Long amount);
 }

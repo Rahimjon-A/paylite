@@ -3,6 +3,7 @@ package com.paylite.web.rest;
 import com.paylite.domain.Agent;
 import com.paylite.domain.dto.AgentBalanceResponse;
 import com.paylite.domain.dto.TopUpRequest;
+import com.paylite.mapper.AgentMapper;
 import com.paylite.service.AgentService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -24,15 +25,21 @@ public class AgentResource {
     private static final Logger LOG = LoggerFactory.getLogger(AgentResource.class);
 
     private final AgentService agentService;
+    private final AgentMapper agentMapper;
 
-    public AgentResource(AgentService agentService) {
+    public AgentResource(AgentService agentService, AgentMapper agentMapper) {
         this.agentService = agentService;
+        this.agentMapper = agentMapper;
     }
 
     @GetMapping("/me/balance")
     @PreAuthorize("hasAuthority('ROLE_AGENT')")
     public ResponseEntity<AgentBalanceResponse> getCurrentAgentBalance() {
-        return ResponseEntity.ok(agentService.getCurrentAgentBalance());
+        LOG.debug("REST request to get current Agent balance");
+
+        Agent agent = agentService.getCurrentAgent();
+
+        return ResponseEntity.ok(agentMapper.toBalanceResponse(agent));
     }
 
     @PostMapping("/{id}/topup")

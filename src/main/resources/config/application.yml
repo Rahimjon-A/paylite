@@ -22,7 +22,12 @@ spring:
       on-profile: '!api-docs'
 springdoc:
   api-docs:
-    enabled: false
+    enabled: true
+  paths-to-match: /api/**
+  swagger-ui:
+    oauth:
+      client-id: web_app
+      use-pkce-with-authorization-code-grant: true
 ---
 management:
   endpoints:
@@ -102,6 +107,9 @@ spring:
       port: 8500
       config:
         format: YAML
+        watch:
+          enabled: true
+          delay: 1000
 
   docker:
     compose:

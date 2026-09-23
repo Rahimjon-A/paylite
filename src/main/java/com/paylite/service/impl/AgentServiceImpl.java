@@ -28,13 +28,13 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     @Transactional(readOnly = true)
-    public AgentBalanceResponse getCurrentAgentBalance() {
+    public Agent getCurrentAgent() {
         String login = SecurityUtils.getCurrentUserLogin()
             .orElseThrow(() -> new IllegalStateException("Current user is not authenticated"));
 
-        Agent agent = agentRepository.findOneByLogin(login).orElseThrow(() -> new EntityNotFoundException("Agent not found: " + login));
+        LOG.debug("Request to get current Agent : {}", login);
 
-        return new AgentBalanceResponse(agent.getBalance());
+        return agentRepository.findOneByLogin(login).orElseThrow(() -> new EntityNotFoundException("Agent not found: " + login));
     }
 
     @Override
@@ -44,6 +44,8 @@ public class AgentServiceImpl implements AgentService {
         Agent agent = agentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Agent not found: " + id));
 
         agent.setBalance(agent.getBalance() + amount);
+
+        LOG.debug("Agent {} balance successfully updated to {}", agent.getId(), agent.getBalance());
 
         return agentRepository.save(agent);
     }
