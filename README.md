@@ -28,15 +28,39 @@ The application allows agents to create payments using their balance, view their
 Simple layered architecture:
 
 ```text
-REST Resource
-     ↓
-   Mapper
-     ↓
-  Service
-     ↓
- Repository
-     ↓
- PostgreSQL
+                         ┌──────────────────┐
+                         │Keycloak/port:9080│
+                         │                  │
+                         │ paylite realm    │
+                         │                  │
+                         │ Users            │
+                         │ Groups           │
+                         │ Roles            │
+                         │ Clients          │
+                         └────────┬─────────┘
+                                  │
+                         JWT Access Token
+                                  │
+                                  ▼
+┌──────────────┐          ┌──────────────────┐   ┌──────────────────┐
+│   Postman    │─────────▶│PayLite/port8080  │──▶│ Consul/port:8500 │
+│   Swagger    │  Bearer  │ Spring Boot API  │   │                  │
+│   Clients    │   JWT    └────────┬─────────┘   │  commission: 1.5 │
+└──────────────┘                   │             └──────────────────┘
+                         Spring Security
+                                   │
+                           JWT validation
+                                   │
+                          role authorization
+                                   │
+                                   ▼
+                            PayLite business
+                                   │
+                                   ▼
+                         ┌────────────────────┐
+                         │PostgreSQL/port:5433│
+                         └────────────────────┘
+
 ```
 
 External services:
@@ -178,6 +202,14 @@ Example:
 ## Commission
 
 The commission percentage is stored in Consul:
+
+Key / Value folder should be created
+
+```text
+config/paylite/data
+```
+
+Value:
 
 ```yaml
 application:

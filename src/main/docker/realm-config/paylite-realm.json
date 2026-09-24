@@ -2237,6 +2237,8 @@
         {
           "id": "b860462b-9b02-48ba-9523-d3a8926a917b",
           "type": "password",
+          "value": "admin",
+          "temporary": false,
           "createdDate": 1505479429154,
           "secretData": "{\"value\":\"4pf9K2jWSCcHC+CwsZP/qidN5pSmDUe6AX6wBerSGdBVKkExay8MWKx+EKmaaObZW6FVsD8vdW/ZsyUFD9gJ1Q==\",\"salt\":\"1/qNkZ5kr77jOMOBPBogGw==\"}",
           "credentialData": "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\"}"
@@ -2258,13 +2260,15 @@
       "enabled": true,
       "totp": false,
       "emailVerified": true,
-      "firstName": "",
+      "firstName": "Agent",
       "lastName": "Agent",
       "email": "agent@localhost",
       "credentials": [
         {
           "id": "7821832b-1e82-45a2-b8d3-f1a6ad909e64",
           "type": "password",
+          "value": "agent",
+          "temporary": false,
           "createdDate": 1505479392766,
           "secretData": "{\"value\":\"MbKsMgWPnZyImih8s4SaoCSCq+XIY/c6S9F93sXEidHF1TjPWxCqMkec0+o3860CMLXHt3az61cIJOWI0FW9aw==\",\"salt\":\"fmpBI1r8R1u75hDLMUlwBw==\"}",
           "credentialData": "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\"}"
@@ -2272,6 +2276,27 @@
       ],
       "disableableCredentialTypes": [],
       "requiredActions": [],
+      "realmRoles": ["offline_access", "uma_authorization"],
+      "clientRoles": {
+        "account": ["view-profile", "manage-account"]
+      },
+      "notBefore": 0,
+      "groups": ["/Agents"]
+    },
+    {
+      "username": "agent2",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Agent",
+      "lastName": "Two",
+      "email": "agent2@paylite.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "agent2",
+          "temporary": false
+        }
+      ],
       "realmRoles": ["offline_access", "uma_authorization"],
       "clientRoles": {
         "account": ["view-profile", "manage-account"]

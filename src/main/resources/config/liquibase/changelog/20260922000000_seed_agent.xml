@@ -8,9 +8,15 @@
 
   <changeSet id="20260922000000-1" author="paylite">
     <insert tableName="agent">
-      <column name="id" value="1"/>
+      <column name="id" valueNumeric="1"/>
       <column name="login" value="agent"/>
       <column name="balance" valueNumeric="10000000"/>
+    </insert>
+
+    <insert tableName="agent">
+      <column name="id" valueNumeric="2"/>
+      <column name="login" value="agent2"/>
+      <column name="balance" valueNumeric="5000000"/>
     </insert>
   </changeSet>
 
