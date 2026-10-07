@@ -7,6 +7,7 @@ import com.paylite.domain.dto.PaymentResponse;
 import com.paylite.domain.enumeration.PaymentStatus;
 import com.paylite.mapper.PaymentMapper;
 import com.paylite.service.PaymentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import java.util.Objects;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/payments")
+@SecurityRequirement(name = "Keycloak")
 public class PaymentResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(PaymentResource.class);

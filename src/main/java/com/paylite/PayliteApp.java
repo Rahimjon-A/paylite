@@ -2,6 +2,9 @@ package com.paylite;
 
 import com.paylite.config.ApplicationProperties;
 import com.paylite.config.CRLFLogConverter;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import jakarta.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -21,6 +24,12 @@ import tech.jhipster.config.JHipsterConstants;
 
 @SpringBootApplication
 @EnableConfigurationProperties({ LiquibaseProperties.class, ApplicationProperties.class })
+@SecurityScheme(
+    name = "Keycloak",
+    openIdConnectUrl = "http://localhost:9080/realms/paylite/.well-known/openid-configuration",
+    type = SecuritySchemeType.OPENIDCONNECT,
+    in = SecuritySchemeIn.HEADER
+)
 public class PayliteApp {
 
     private static final Logger LOG = LoggerFactory.getLogger(PayliteApp.class);

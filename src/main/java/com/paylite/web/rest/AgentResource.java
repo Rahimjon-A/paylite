@@ -5,6 +5,7 @@ import com.paylite.domain.dto.AgentBalanceResponse;
 import com.paylite.domain.dto.TopUpRequest;
 import com.paylite.mapper.AgentMapper;
 import com.paylite.service.AgentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,7 @@ import tech.jhipster.web.util.ResponseUtil;
  */
 @RestController
 @RequestMapping("/api/agents")
+@SecurityRequirement(name = "Keycloak")
 public class AgentResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(AgentResource.class);
