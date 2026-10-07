@@ -1,8 +1,11 @@
 package com.paylite.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A Agent.
@@ -27,6 +30,10 @@ public class Agent implements Serializable {
     @NotNull
     @Column(name = "balance", nullable = false)
     private Long balance;
+
+    @OneToMany(mappedBy = "agent")
+    @JsonIgnoreProperties(value = { "agent" }, allowSetters = true)
+    private Set<AgentCard> agentCards = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -67,6 +74,31 @@ public class Agent implements Serializable {
 
     public void setBalance(Long balance) {
         this.balance = balance;
+    }
+
+    public Set<AgentCard> getAgentCards() {
+        return agentCards;
+    }
+
+    public void setAgentCards(Set<AgentCard> agentCards) {
+        this.agentCards = agentCards;
+    }
+
+    public Agent agentCards(Set<AgentCard> agentCards) {
+        this.setAgentCards(agentCards);
+        return this;
+    }
+
+    public Agent addAgentCard(AgentCard agentCard) {
+        this.agentCards.add(agentCard);
+        agentCard.setAgent(this);
+        return this;
+    }
+
+    public Agent removeAgentCard(AgentCard agentCard) {
+        this.agentCards.remove(agentCard);
+        agentCard.setAgent(null);
+        return this;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here

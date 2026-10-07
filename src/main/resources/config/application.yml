@@ -96,7 +96,7 @@ management:
 
 spring:
   application:
-    name: paylite
+    name: paylite-service
 
   config:
     import: 'consul:'
@@ -105,11 +105,21 @@ spring:
     consul:
       host: localhost
       port: 8500
+
       config:
         format: YAML
         watch:
           enabled: true
           delay: 1000
+
+      discovery:
+        service-name: paylite-service
+        instance-id: paylite-service-${server.port}
+        hostname: localhost
+        register-health-check: true
+        health-check-path: /management/health
+        health-check-url: http://host.docker.internal:8080/management/health
+        health-check-interval: 10s
 
   docker:
     compose:

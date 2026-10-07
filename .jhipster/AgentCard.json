@@ -1,0 +1,54 @@
+{
+  "annotations": {
+    "changelogDate": "20261007075041"
+  },
+  "dto": "no",
+  "fields": [
+    {
+      "fieldName": "pan",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "unique", "minlength", "maxlength"],
+      "fieldValidateRulesMaxlength": "16",
+      "fieldValidateRulesMinlength": "16"
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "AgentCardType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "UZCARD,HUMO"
+    },
+    {
+      "fieldName": "expireDate",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "AgentCardStatus",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "ACTIVE,BLOCKED,EXPIRED"
+    },
+    {
+      "fieldName": "createdAt",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "jpaMetamodelFiltering": false,
+  "name": "AgentCard",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityField": "login",
+      "otherEntityName": "agent",
+      "otherEntityRelationshipName": "agentCard",
+      "relationshipName": "agent",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": ["required"]
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

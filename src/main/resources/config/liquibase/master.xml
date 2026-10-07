@@ -20,4 +20,6 @@
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
     <include file="config/liquibase/changelog/20260921130000_rename_payment_agent_column.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20260922000000_seed_agent.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20261007075041_added_entity_AgentCard.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20261007075041_added_entity_constraints_AgentCard.xml" relativeToChangelogFile="false"/>
 </databaseChangeLog>
