@@ -105,6 +105,13 @@
       <artifactId>spring-cloud-context</artifactId>
     </dependency>
 
+    <!-- OpenFeign -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
+    </dependency>
+    <!-- OpenFeign -->
+
     <dependency>
       <groupId>tech.jhipster</groupId>
       <artifactId>jhipster-framework</artifactId>

@@ -1,0 +1,87 @@
+{
+  "annotations": {
+    "changelogDate": "20261007130759"
+  },
+  "dto": "no",
+  "fields": [
+    {
+      "fieldName": "requestId",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "unique"]
+    },
+    {
+      "fieldName": "amount",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "commissionAmount",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "totalAmount",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "fromPan",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "fromType",
+      "fieldType": "AgentCardType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "UZCARD,HUMO"
+    },
+    {
+      "fieldName": "fromExpireDate",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "toPan",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "toType",
+      "fieldType": "AgentCardType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "UZCARD,HUMO"
+    },
+    {
+      "fieldName": "toExpireDate",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "P2POperationStatus",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "CREATED,VALIDATING,BALANCE_CHECKED,WITHDRAWN,PAYING,COMPLETED,COMPENSATING,COMPENSATED,FAILED,COMPENSATION_FAILED"
+    },
+    {
+      "fieldName": "failureReason",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "createdAt",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "updatedAt",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "jpaMetamodelFiltering": false,
+  "name": "P2POperation",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

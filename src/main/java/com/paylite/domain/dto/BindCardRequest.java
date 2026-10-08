@@ -9,8 +9,12 @@ import java.time.LocalDate;
 
 public record BindCardRequest(
     @NotBlank String pan,
+
     @NotNull AgentCardType type,
+
     @NotNull LocalDate expireDate,
+
     @NotNull AgentCardStatus status,
+
     @NotNull Instant createdAt
 ) {}

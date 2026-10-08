@@ -2,6 +2,7 @@ package com.paylite;
 
 import com.paylite.config.ApplicationProperties;
 import com.paylite.config.CRLFLogConverter;
+import com.paylite.config.CommissionProperties;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
@@ -18,18 +19,20 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.core.env.Environment;
 import tech.jhipster.config.DefaultProfileUtil;
 import tech.jhipster.config.JHipsterConstants;
 
 @SpringBootApplication
-@EnableConfigurationProperties({ LiquibaseProperties.class, ApplicationProperties.class })
+@EnableConfigurationProperties({ LiquibaseProperties.class, ApplicationProperties.class, CommissionProperties.class })
 @SecurityScheme(
     name = "Keycloak",
     openIdConnectUrl = "http://localhost:9080/realms/paylite/.well-known/openid-configuration",
     type = SecuritySchemeType.OPENIDCONNECT,
     in = SecuritySchemeIn.HEADER
 )
+@EnableFeignClients(basePackages = "com.paylite.client")
 public class PayliteApp {
 
     private static final Logger LOG = LoggerFactory.getLogger(PayliteApp.class);

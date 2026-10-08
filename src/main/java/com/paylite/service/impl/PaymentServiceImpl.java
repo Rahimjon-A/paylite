@@ -1,6 +1,5 @@
 package com.paylite.service.impl;
 
-import com.paylite.config.ApplicationProperties;
 import com.paylite.domain.Agent;
 import com.paylite.domain.Payment;
 import com.paylite.domain.enumeration.PaymentStatus;
@@ -8,7 +7,6 @@ import com.paylite.repository.AgentRepository;
 import com.paylite.repository.PaymentRepository;
 import com.paylite.security.SecurityUtils;
 import com.paylite.service.PaymentService;
-import com.paylite.util.CommissionCalculator;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.Instant;
 import org.slf4j.Logger;
@@ -26,16 +24,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final AgentRepository agentRepository;
-    private final ApplicationProperties applicationProperties;
+    private final CommissionService commissionService;
 
-    public PaymentServiceImpl(
-        PaymentRepository paymentRepository,
-        AgentRepository agentRepository,
-        ApplicationProperties applicationProperties
-    ) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository, AgentRepository agentRepository, CommissionService commissionService) {
         this.paymentRepository = paymentRepository;
         this.agentRepository = agentRepository;
-        this.applicationProperties = applicationProperties;
+        this.commissionService = commissionService;
     }
 
     @Override
@@ -52,7 +46,7 @@ public class PaymentServiceImpl implements PaymentService {
         Agent agent = findAgentForUpdate(login);
 
         payment.setAgent(agent);
-        payment.setCommissionAmount(CommissionCalculator.getCommissionAmount(payment.getAmount(), applicationProperties));
+        payment.setCommissionAmount(commissionService.getCommissionAmount(payment.getAmount()));
 
         long totalAmount = payment.getAmount() + payment.getCommissionAmount();
         payment.setTotalAmount(totalAmount);

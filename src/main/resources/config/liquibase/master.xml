@@ -22,4 +22,5 @@
     <include file="config/liquibase/changelog/20260922000000_seed_agent.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20261007075041_added_entity_AgentCard.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20261007075041_added_entity_constraints_AgentCard.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20261007130759_added_entity_P2POperation.xml" relativeToChangelogFile="false"/>
 </databaseChangeLog>

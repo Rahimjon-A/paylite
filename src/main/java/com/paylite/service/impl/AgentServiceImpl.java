@@ -1,7 +1,6 @@
 package com.paylite.service.impl;
 
 import com.paylite.domain.Agent;
-import com.paylite.domain.dto.AgentBalanceResponse;
 import com.paylite.repository.AgentRepository;
 import com.paylite.security.SecurityUtils;
 import com.paylite.service.AgentService;
