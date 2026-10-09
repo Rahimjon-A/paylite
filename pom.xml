@@ -112,6 +112,13 @@
     </dependency>
     <!-- OpenFeign -->
 
+    <!-- Jackson Mapper   -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-xml</artifactId>
+    </dependency>
+    <!-- Jackson Mapper   -->
+
     <dependency>
       <groupId>tech.jhipster</groupId>
       <artifactId>jhipster-framework</artifactId>

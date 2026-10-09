@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Service Implementation for managing {@link com.paylite.domain.Agent}.
  */
 @Service
-@Transactional
 public class AgentServiceImpl implements AgentService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AgentServiceImpl.class);
@@ -37,6 +36,7 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
+    @Transactional
     public Agent topUp(Long id, Long amount) {
         LOG.debug("Request to top up Agent : {}, amount : {}", id, amount);
 

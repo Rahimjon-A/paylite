@@ -44,6 +44,10 @@ public class CommissionService {
         return commission.longValueExact();
     }
 
+    public BigDecimal getCommissionPercent(AgentCardType fromType, AgentCardType toType) {
+        return getPercentage(fromType, toType);
+    }
+
     private BigDecimal getPercentage(AgentCardType fromType, AgentCardType toType) {
         return switch (fromType) {
             case UZCARD -> switch (toType) {

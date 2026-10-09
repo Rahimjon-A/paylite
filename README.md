@@ -212,6 +212,12 @@ config/paylite/data
 Value:
 
 ```yaml
+paylite:
+  commission:
+    uzcard-to-uzcard: 0
+    uzcard-to-humo: 1
+    humo-to-uzcard: 1
+    humo-to-humo: 0
 application:
   payment:
     commission-percent: 1.5
