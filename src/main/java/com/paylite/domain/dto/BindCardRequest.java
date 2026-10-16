@@ -16,5 +16,7 @@ public record BindCardRequest(
 
     @NotNull AgentCardStatus status,
 
-    @NotNull Instant createdAt
+    @NotNull Instant createdAt,
+
+    @NotBlank String createdByLogin
 ) {}

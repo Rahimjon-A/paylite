@@ -22,7 +22,7 @@ public class CommissionService {
         BigDecimal percentage = getPercentage(fromType, toType);
 
         if (percentage == null) {
-            throw new IllegalStateException("Commission percentage is not configured. " + "Expected property: paylite.commission...");
+            throw new IllegalStateException("Commission percentage is not configured. Expected property: paylite.commission...");
         }
 
         return BigDecimal.valueOf(amount).multiply(percentage).divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP).longValueExact();
@@ -33,7 +33,7 @@ public class CommissionService {
 
         if (commissionPercent == null) {
             throw new IllegalStateException(
-                "Commission percentage is not configured. " + "Expected property: application.payment.commission-percent"
+                "Commission percentage is not configured. Expected property: application.payment.commission-percent"
             );
         }
 

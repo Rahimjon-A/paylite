@@ -1,12 +1,16 @@
 package com.paylite.service.impl;
 
 import com.paylite.client.CardBankClient;
+import com.paylite.domain.CommissionLedger;
 import com.paylite.domain.P2POperation;
 import com.paylite.domain.dto.*;
 import com.paylite.domain.enumeration.AgentCardStatus;
 import com.paylite.domain.enumeration.AgentCardType;
 import com.paylite.domain.enumeration.P2POperationStatus;
 import com.paylite.repository.P2PRepository;
+import com.paylite.security.SecurityUtils;
+import com.paylite.service.AgentCardService;
+import com.paylite.service.CommissionLedgerService;
 import com.paylite.service.P2PService;
 import com.paylite.service.card.CardNetworkClient;
 import com.paylite.service.card.CardNetworkClientFactory;
@@ -15,38 +19,55 @@ import com.paylite.web.rest.errors.P2PInsufficientBalanceException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Service
 public class P2PServiceImpl implements P2PService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(P2PServiceImpl.class);
     private final P2PRepository operationRepository;
     private final CardBankClient cardBankClient;
     private final CardValidationService cardValidationService;
     private final CommissionService commissionService;
     private final CardNetworkClientFactory networkClientFactory;
+    private final AgentCardService agentCardService;
+    private final CommissionLedgerService commissionLedgerService;
 
     public P2PServiceImpl(
         P2PRepository operationRepository,
         CardBankClient cardBankClient,
         CardValidationService cardValidationService,
         CommissionService commissionService,
-        CardNetworkClientFactory networkClientFactory
+        CardNetworkClientFactory networkClientFactory,
+        AgentCardService agentCardService,
+        CommissionLedgerService commissionLedgerService
     ) {
         this.operationRepository = operationRepository;
         this.cardBankClient = cardBankClient;
         this.cardValidationService = cardValidationService;
         this.commissionService = commissionService;
         this.networkClientFactory = networkClientFactory;
+        this.agentCardService = agentCardService;
+        this.commissionLedgerService = commissionLedgerService;
     }
 
     @Override
     public P2PResponse execute(P2PRequest request) {
+        LOG.info("Starting P2P operation: requestId={}, amount={}", request.requestId(), request.amount());
+
+        // 0. Verify sender card ownership BEFORE processing
+        validateSenderCardOwnership(request.fromPan());
+
         // 1. Idempotency check
         Optional<P2POperation> existingOperation = findExistingOperation(request.requestId());
 
         if (existingOperation.isPresent()) {
+            LOG.info("P2P operation already exists: requestId={}, status={}", request.requestId(), existingOperation.get().getStatus());
+
             return toResponse(existingOperation.get());
         }
 
@@ -59,6 +80,8 @@ public class P2PServiceImpl implements P2PService {
         // 3. Calculate commission
         long commission = commissionService.calculate(fromCard.type(), toCard.type(), request.amount());
         long totalAmount = calculateTotalAmount(request.amount(), commission);
+
+        LOG.debug("Calculated P2P amounts: requestId={}, commission={}, totalAmount={}", request.requestId(), commission, totalAmount);
 
         // 4. Create and claim P2P operation
         P2POperation operation = createOperation(request, fromCard, toCard, commission, totalAmount);
@@ -76,6 +99,7 @@ public class P2PServiceImpl implements P2PService {
         withdraw(operation, senderClient, fromCard.pan(), totalAmount);
 
         // 8. Pay recipient or compensate if payment fails
+        LOG.info("P2P operation finished: requestId={}, status={}", operation.getRequestId(), operation.getStatus());
         return payRecipient(operation, senderClient, receiverClient, fromCard.pan(), toCard.pan(), request.amount(), totalAmount);
     }
 
@@ -110,6 +134,8 @@ public class P2PServiceImpl implements P2PService {
         try {
             return operationRepository.saveAndFlush(operation);
         } catch (DataIntegrityViolationException exception) {
+            LOG.warn("P2P operation claim conflict: requestId={}", operation.getRequestId());
+
             return operationRepository
                 .findByRequestId(operation.getRequestId())
                 .orElseThrow(() -> new P2PCardException("P2P operation already exists but could not be loaded", exception));
@@ -127,7 +153,17 @@ public class P2PServiceImpl implements P2PService {
             CardResponse response = cardBankClient.getCardByPan(pan);
             return toCardInfo(response);
         } catch (Exception exception) {
+            LOG.error("Unable to retrieve card information: PAN={}", maskPan(pan), exception);
+
             throw new P2PCardException("Unable to get card information for PAN: " + pan, exception);
+        }
+    }
+
+    private void validateSenderCardOwnership(String pan) {
+        String login = SecurityUtils.getCurrentUserLogin().orElseThrow(() -> new AccessDeniedException("User is not authenticated"));
+
+        if (!agentCardService.isAgentCard(pan, login)) {
+            throw new AccessDeniedException("You are not authorized to use this sender card");
         }
     }
 
@@ -174,8 +210,12 @@ public class P2PServiceImpl implements P2PService {
                 throw new P2PInsufficientBalanceException("Insufficient balance");
             }
         } catch (P2PInsufficientBalanceException exception) {
+            LOG.warn("Insufficient sender balance: PAN={}, requiredAmount={}", maskPan(senderPan), totalAmount);
+
             throw exception;
         } catch (Exception exception) {
+            LOG.error("Unable to check sender balance: PAN={}", maskPan(senderPan), exception);
+
             throw new P2PCardException("Unable to check sender balance", exception);
         }
     }
@@ -185,6 +225,14 @@ public class P2PServiceImpl implements P2PService {
             senderClient.withdraw(senderPan, totalAmount);
             saveOperation(operation, P2POperationStatus.WITHDRAWN);
         } catch (Exception exception) {
+            LOG.error(
+                "Sender withdrawal failed: requestId={}, PAN={}, amount={}",
+                operation.getRequestId(),
+                maskPan(senderPan),
+                totalAmount,
+                exception
+            );
+
             failOperation(operation, "Unable to withdraw sender funds");
             throw new P2PCardException("Unable to withdraw sender funds", exception);
         }
@@ -204,13 +252,39 @@ public class P2PServiceImpl implements P2PService {
         try {
             receiverClient.deposit(receiverPan, amount);
             saveOperation(operation, P2POperationStatus.COMPLETED);
+            recordCommission(operation);
+
+            LOG.info("Recipient payment completed: requestId={}, amount={}", operation.getRequestId(), amount);
+
             return toResponse(operation);
         } catch (Exception paymentException) {
-            return compensate(operation, senderClient, senderPan, totalAmount);
+            LOG.error("Recipient deposit failed: requestId={}. Starting compensation.", operation.getRequestId(), paymentException);
+
+            return compensate(operation, senderClient, senderPan, totalAmount, paymentException);
         }
     }
 
-    private P2PResponse compensate(P2POperation operation, CardNetworkClient senderClient, String senderPan, long amount) {
+    private void recordCommission(P2POperation operation) {
+        CommissionLedger entry = new CommissionLedger()
+            .requestId(operation.getRequestId())
+            .fromPan(operation.getFromPan())
+            .cardType(operation.getFromType())
+            .destinationAccount("SYSTEM_COMMISSION_ACCOUNT")
+            .commissionAmount(operation.getCommissionAmount())
+            .totalAmount(operation.getTotalAmount())
+            .transferredAmount(operation.getAmount())
+            .createdAt(Instant.now());
+
+        commissionLedgerService.record(entry);
+    }
+
+    private P2PResponse compensate(
+        P2POperation operation,
+        CardNetworkClient senderClient,
+        String senderPan,
+        long amount,
+        Exception paymentException
+    ) {
         saveOperation(operation, P2POperationStatus.COMPENSATING);
 
         try {
@@ -218,10 +292,23 @@ public class P2PServiceImpl implements P2PService {
             operation.setFailureReason("Recipient payment failed; funds returned");
             saveOperation(operation, P2POperationStatus.COMPENSATED);
 
+            LOG.warn(
+                "P2P operation compensated successfully: requestId={}. " + "The recipient deposit failed, but sender funds were returned.",
+                operation.getRequestId()
+            );
+
             return toResponse(operation);
         } catch (Exception compensationException) {
             operation.setFailureReason("Payment failed and compensation failed");
             saveOperation(operation, P2POperationStatus.COMPENSATION_FAILED);
+
+            compensationException.addSuppressed(paymentException);
+
+            LOG.error(
+                "P2P compensation failed: requestId={}. " + "Both recipient deposit and sender refund failed.",
+                operation.getRequestId(),
+                compensationException
+            );
 
             throw new P2PCardException("Payment failed and compensation failed", compensationException);
         }
@@ -230,6 +317,13 @@ public class P2PServiceImpl implements P2PService {
     private void failOperation(P2POperation operation, String reason) {
         operation.setFailureReason(reason);
         saveOperation(operation, P2POperationStatus.FAILED);
+    }
+
+    private String maskPan(String pan) {
+        if (pan == null || pan.length() < 4) {
+            return "****";
+        }
+        return "**** **** **** " + pan.substring(pan.length() - 4);
     }
 
     private CardInfo toCardInfo(CardResponse response) {

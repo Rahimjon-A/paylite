@@ -26,7 +26,7 @@ springdoc:
   paths-to-match: /api/**
   swagger-ui:
     oauth:
-      client-id: web_app
+      client-id: ${CLIENT_ID}
       use-pkce-with-authorization-code-grant: true
 ---
 management:
@@ -99,7 +99,9 @@ spring:
     name: paylite-service
 
   config:
-    import: 'consul:'
+    import:
+      - 'optional:file:.env[.properties]'
+      - 'consul:'
 
   cloud:
     consul:
@@ -180,8 +182,8 @@ spring:
             issuer-uri: http://localhost:9080/realms/paylite
         registration:
           oidc:
-            client-id: web_app
-            client-secret: web_app
+            client-id: ${CLIENT_ID}
+            client-secret: ${CLIENT_SECRET}
             scope: openid, profile, email, offline_access # last one for refresh tokens
   task:
     execution:

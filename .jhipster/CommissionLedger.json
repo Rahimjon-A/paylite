@@ -1,0 +1,53 @@
+{
+  "annotations": {
+    "changelogDate": "20261015111559"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "requestId",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "unique"]
+    },
+    {
+      "fieldName": "fromPan",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "16"
+    },
+    {
+      "fieldName": "cardType",
+      "fieldType": "AgentCardType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "UZCARD,HUMO"
+    },
+    {
+      "fieldName": "destinationAccount",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "totalAmount",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "transferredAmount",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "commissionAmount",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "createdAt",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "CommissionLedger",
+  "relationships": [],
+  "searchEngine": "no"
+}

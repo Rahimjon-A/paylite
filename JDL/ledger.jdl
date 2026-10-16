@@ -1,0 +1,15 @@
+enum AgentCardType {
+  UZCARD,
+  HUMO
+}
+
+entity CommissionLedger {
+  requestId String required unique,
+  fromPan String required maxlength(16),
+  cardType AgentCardType required,
+  destinationAccount String required,
+  totalAmount Long required,
+  transferredAmount Long required,
+  commissionAmount Long required,
+  createdAt Instant required
+}

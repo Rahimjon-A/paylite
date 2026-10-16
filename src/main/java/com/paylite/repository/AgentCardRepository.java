@@ -16,4 +16,8 @@ public interface AgentCardRepository extends JpaRepository<AgentCard, Long> {
     boolean existsByPan(String pan);
 
     List<AgentCard> findAllByAgentId(Long agentId);
+
+    boolean existsByPanAndAgent_Login(String pan, String agentLogin);
+
+    void deleteAgentCardByPan(String pan);
 }

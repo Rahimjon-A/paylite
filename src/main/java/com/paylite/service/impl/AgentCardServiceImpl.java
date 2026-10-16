@@ -1,8 +1,10 @@
 package com.paylite.service.impl;
 
+import com.paylite.client.CardBankClient;
 import com.paylite.domain.Agent;
 import com.paylite.domain.AgentCard;
 import com.paylite.domain.dto.BindCardRequest;
+import com.paylite.domain.dto.CardResponse;
 import com.paylite.repository.AgentCardRepository;
 import com.paylite.repository.AgentRepository;
 import com.paylite.security.SecurityUtils;
@@ -17,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Service Implementation for managing {@link com.paylite.domain.AgentCard}.
  */
 @Service
-@Transactional
 public class AgentCardServiceImpl implements AgentCardService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AgentCardServiceImpl.class);
@@ -25,15 +26,20 @@ public class AgentCardServiceImpl implements AgentCardService {
     private final AgentRepository agentRepository;
     private final AgentCardRepository agentCardRepository;
 
-    public AgentCardServiceImpl(AgentRepository agentRepository, AgentCardRepository agentCardRepository) {
+    public AgentCardServiceImpl(AgentRepository agentRepository, AgentCardRepository agentCardRepository, CardBankClient cardBankClient) {
         this.agentRepository = agentRepository;
         this.agentCardRepository = agentCardRepository;
     }
 
     @Override
+    @Transactional
     public AgentCard bindCard(BindCardRequest request) {
         String login = SecurityUtils.getCurrentUserLogin()
             .orElseThrow(() -> new IllegalStateException("Current user is not authenticated"));
+
+        if (!login.equals(request.createdByLogin())) {
+            throw new BadRequestAlertException("Only the agent who created this card can bind it", "agentCard", "cardowner-mismatch");
+        }
 
         Agent agent = agentRepository
             .findOneByLogin(login)
@@ -52,5 +58,21 @@ public class AgentCardServiceImpl implements AgentCardService {
             .agent(agent);
 
         return agentCardRepository.save(agentCard);
+    }
+
+    @Override
+    @Transactional
+    public void unbindCard(String pan) {
+        LOG.info("Receive request (unbind) card {} in paylite-service", pan);
+
+        agentCardRepository.deleteAgentCardByPan(pan);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isAgentCard(String pan, String login) {
+        LOG.debug("Receive request check agent's card pan: {}, agent login: {}", pan, login);
+
+        return agentCardRepository.existsByPanAndAgent_Login(pan, login);
     }
 }
